@@ -70,7 +70,8 @@ export default function Page() {
       return;
     }
 
-    const isM3u8 = url.endsWith('.m3u8') || url.includes('.m3u8');
+    // consider proxied URLs that include format=hls or original .m3u8
+    const isM3u8 = url.includes('format=hls') || url.endsWith('.m3u8') || url.includes('.m3u8');
 
     const setupHls = async () => {
       // dynamically load hls.js from unpkg
@@ -134,10 +135,10 @@ export default function Page() {
   };
 
   return (
-    <div style={{ height: "100vh", display: "flex", gap: 0 }}>
-      <aside style={{ width: 260, borderRight: "1px solid #eee", overflowY: "auto" }}>
-        <div style={{ position: 'sticky', top: 0, background: '#fff', zIndex: 3, padding: 12, fontWeight: 700, borderBottom: '1px solid #eee' }}>Channels</div>
-        <div style={{ position: 'sticky', top: 48, background: '#fff', zIndex: 2, padding: 8, borderBottom: '1px solid #f7f7f7' }}>
+    <div className="app-root">
+      <aside className="channels">
+        <div className="header">Channels</div>
+        <div className="search">
           <input
             value={query}
             onChange={(e) => setQuery(e.target.value)}
@@ -145,17 +146,12 @@ export default function Page() {
             placeholder="Search channels..."
           />
         </div>
-        <ul style={{ listStyle: "none", padding: 0, margin: 0 }}>
+        <ul>
           {filteredChannels.map((c) => (
             <li
               key={c.url}
               onClick={() => setSelected(c.url)}
-              style={{
-                padding: 10,
-                cursor: "pointer",
-                background: selected === c.url ? "#f0f0f0" : undefined,
-                borderBottom: "1px solid #fafafa",
-              }}
+              className={selected === c.url ? 'selected' : ''}
             >
               {c.name}
             </li>
@@ -163,22 +159,18 @@ export default function Page() {
         </ul>
       </aside>
 
-      <main style={{ flex: 1, display: "flex", flexDirection: "column", alignItems: "stretch" }}>
-        <div style={{ padding: 8, borderBottom: "1px solid #eee" }}>
+      <main className="main">
+        <div className="title">
           <strong>{channels.find((x) => x.url === selected)?.name || "Select a channel"}</strong>
         </div>
-        <div style={{ flex: 1, display: "flex", alignItems: "center", justifyContent: "center", background: "#000" }}>
-          <video
-            ref={videoRef}
-            controls
-            style={{ width: "100%", height: "100%", maxHeight: "100%", background: "#000" }}
-          />
+        <div className="playerWrap">
+          <video ref={videoRef} controls />
         </div>
       </main>
 
-      <aside style={{ width: 320, borderLeft: "1px solid #eee", display: "flex", flexDirection: "column" }}>
-        <div style={{ padding: 12, fontWeight: 700 }}>Chat (you are {anonName || '...'})</div>
-        <div style={{ flex: 1, overflowY: "auto", padding: 12 }}>
+      <aside className="chat">
+        <div className="header">Chat (you are {anonName || '...'})</div>
+        <div className="messages">
           {messages.map((m, i) => (
             <div key={i} style={{ marginBottom: 8 }}>
               <div style={{ fontSize: 12, color: "#666" }}>{m.name}</div>
@@ -186,7 +178,7 @@ export default function Page() {
             </div>
           ))}
         </div>
-        <form onSubmit={sendMessage} style={{ padding: 12, borderTop: "1px solid #eee" }}>
+        <form onSubmit={sendMessage} className="composer">
           <input
             value={input}
             onChange={(e) => setInput(e.target.value)}

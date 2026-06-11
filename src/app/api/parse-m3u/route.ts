@@ -20,9 +20,12 @@ export async function GET() {
         // next non-empty non-comment line is URL
         let j = i + 1;
         while (j < lines.length && (!lines[j] || lines[j].trim().startsWith('#'))) j++;
-        if (j < lines.length) {
+            if (j < lines.length) {
           const urlLine = lines[j].trim();
-          channels.push({ name: name || urlLine, url: urlLine });
+          // proxy the channel URL through /api/proxy to avoid CORS issues
+          const isHls = urlLine.includes('.m3u8') || urlLine.endsWith('.m3u8');
+          const proxied = `/api/proxy?url=${encodeURIComponent(urlLine)}${isHls ? '&format=hls' : ''}`;
+          channels.push({ name: name || urlLine, url: proxied });
           i = j;
         }
       }
@@ -32,7 +35,9 @@ export async function GET() {
       for (const l of lines) {
         const s = l.trim();
         if (!s || s.startsWith('#')) continue;
-        channels.push({ name: s, url: s });
+        const isHls = s.includes('.m3u8') || s.endsWith('.m3u8');
+        const proxied = `/api/proxy?url=${encodeURIComponent(s)}${isHls ? '&format=hls' : ''}`;
+        channels.push({ name: s, url: proxied });
       }
     }
 
