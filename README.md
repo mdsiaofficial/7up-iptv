@@ -34,3 +34,18 @@ You can check out [the Next.js GitHub repository](https://github.com/vercel/next
 The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
 
 Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+
+
+Local configuration
+
+Set the IPTV playlist URL in .env at the project root before running the app. Example (.env):
+
+IPTV_URL="https://example.com/playlist.m3u"
+
+Run the project with Bun (preferred):
+
+bun dev
+
+If you need to run one-off commands that would normally use npx, use bunx instead (e.g., bunx create-next-app).
+
+Open http://localhost:3000. The app will fetch the M3U playlist from IPTV_URL and show channels on the left, a video player in the center, and an ephemeral anonymous chat on the right (messages live for 1 minute).
